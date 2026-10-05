@@ -30,7 +30,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t aceest-fitness-gym .'
+                sh '''
+                    docker --version
+                    docker build -t aceest-fitness-gym .
+                '''
             }
         }
     }
