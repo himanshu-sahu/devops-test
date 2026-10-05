@@ -3,10 +3,14 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 MEMBERS = [
-    {"member_id": "M101", "name": "Aisha Nair", "status": "active", "plan": "Premium"},
-    {"member_id": "M102", "name": "Rahul Sharma", "status": "active", "plan": "Basic"},
-    {"member_id": "M103", "name": "Priya Menon", "status": "active", "plan": "Elite"},
-    {"member_id": "M104", "name": "Karan Singh", "status": "inactive", "plan": "Basic"},
+    {"member_id": "M101", "name": "Aisha Nair",
+        "status": "active", "plan": "Premium"},
+    {"member_id": "M102", "name": "Rahul Sharma",
+        "status": "active", "plan": "Basic"},
+    {"member_id": "M103", "name": "Priya Menon",
+        "status": "active", "plan": "Elite"},
+    {"member_id": "M104", "name": "Karan Singh",
+        "status": "inactive", "plan": "Basic"},
 ]
 
 PLANS = [
@@ -59,7 +63,8 @@ def check_in():
     if not member_id:
         return jsonify({"error": "member_id is required"}), 400
 
-    member = next((item for item in MEMBERS if item['member_id'] == member_id), None)
+    member = next(
+        (item for item in MEMBERS if item['member_id'] == member_id), None)
     if member is None:
         return jsonify({"error": f"Member {member_id} not found"}), 404
 

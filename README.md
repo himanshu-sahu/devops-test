@@ -23,23 +23,27 @@ The application is designed to simulate a small gym management system and includ
 ## Local Setup
 
 1. Clone the repository:
+
    ```bash
    git clone <your-github-repo-url>
    cd <repo-folder>
    ```
 
 2. Create and activate a virtual environment:
+
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
 
 3. Install dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. Run the Flask app:
+
    ```bash
    python app.py
    ```
