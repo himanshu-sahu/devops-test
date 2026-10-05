@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHONPATH = "${WORKSPACE}"
+    }
+
     stages {
         stage('Install Dependencies') {
             steps {
@@ -16,8 +20,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
+                    pwd
+                    ls -la
                     . .venv/bin/activate
-                    pytest -q
+                    python -m pytest -q
                 '''
             }
         }
