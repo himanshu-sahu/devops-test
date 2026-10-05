@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_REPO = 'https://github.com/<your-github-username>/<your-repo-name>.git'
+        GITHUB_REPO = 'https://github.com/himanshu-sahu/devops-test.git'
         GIT_BRANCH = 'main'
         CREDENTIALS_ID = 'github-creds'
     }
@@ -10,22 +10,34 @@ pipeline {
     stages {
         stage('Checkout from GitHub') {
             steps {
-                git branch: env.GIT_BRANCH,
-                    credentialsId: env.CREDENTIALS_ID,
-                    url: env.GITHUB_REPO
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${env.GIT_BRANCH}"]],
+                    userRemoteConfigs: [[
+                        url: env.GITHUB_REPO,
+                        credentialsId: env.CREDENTIALS_ID
+                    ]]
+                ])
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'pip install -r requirements.txt'
+                sh '''
+                    python3 -m venv .venv
+                    . .venv/bin/activate
+                    python -m pip install --upgrade pip
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'pytest -q'
+                sh '''
+                    . .venv/bin/activate
+                    pytest -q
+                '''
             }
         }
 
