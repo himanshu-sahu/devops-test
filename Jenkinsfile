@@ -1,26 +1,7 @@
 pipeline {
     agent any
 
-    environment {
-        GITHUB_REPO = 'https://github.com/himanshu-sahu/devops-test.git'
-        GIT_BRANCH = 'main'
-        CREDENTIALS_ID = 'github-creds'
-    }
-
     stages {
-        stage('Checkout from GitHub') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: "*/${env.GIT_BRANCH}"]],
-                    userRemoteConfigs: [[
-                        url: env.GITHUB_REPO,
-                        credentialsId: env.CREDENTIALS_ID
-                    ]]
-                ])
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 sh '''
