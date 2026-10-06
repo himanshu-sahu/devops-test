@@ -45,3 +45,15 @@ def test_check_in_endpoint(client):
     json_data = response.get_json()
     assert json_data['member_id'] == 'M101'
     assert json_data['status'] == 'checked_in'
+
+
+def test_check_in_requires_member_id(client):
+    response = client.post('/checkin', json={})
+    assert response.status_code == 400
+    assert response.get_json()['error'] == 'member_id is required'
+
+
+def test_check_in_rejects_unknown_member(client):
+    response = client.post('/checkin', json={'member_id': 'M999'})
+    assert response.status_code == 404
+    assert response.get_json()['error'] == 'Member M999 not found'
