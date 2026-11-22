@@ -95,10 +95,11 @@ The included `Jenkinsfile` defines a build pipeline that does the following:
 3. Runs SonarQube static analysis
 4. Waits for the SonarQube Quality Gate and fails the pipeline if it does not pass
 5. Builds the Docker image
+6. Replaces the `aceest-fitness-gym` container and deploys it on port 5001
 
-To run it, create a Jenkins Pipeline job (or Multibranch Pipeline), configure its SCM URL as `https://github.com/himanshu-sahu/devops-test.git`, and use the repository's `Jenkinsfile`. Install the SonarQube Scanner Jenkins plugin, configure a SonarQube server named `SonarQube` and a scanner installation named `SonarScanner` in Jenkins, and configure the SonarQube server webhook to point to `https://<jenkins-url>/sonarqube-webhook/`. The project key and source/test paths are defined in `sonar-project.properties`. The pipeline requires the webhook so Jenkins can receive the Quality Gate result; it aborts if the gate does not pass or if no result is received within five minutes.
+To run it, create a Jenkins Pipeline job (or Multibranch Pipeline), configure its SCM URL as `https://github.com/himanshu-sahu/devops-test.git`, and use the repository's `Jenkinsfile`. Install the SonarQube Scanner Jenkins plugin, configure a SonarQube server named `SonarQube` and a scanner installation named `SonarScanner` in Jenkins, and configure the SonarQube server webhook to point to `https://<jenkins-url>/sonarqube-webhook/`. The project key and source/test paths are defined in `sonar-project.properties`. The pipeline requires the webhook so Jenkins can receive the Quality Gate result; it aborts if the gate does not pass or if no result is received within five minutes. After a successful deployment, the app is available at `http://localhost:5001`.
 
-Configure a GitHub webhook or SCM polling in Jenkins if builds should start automatically after pushes. Public repository access does not require GitHub credentials; private repositories do.
+For a Pipeline job configured with SCM, the `Jenkinsfile` polls the repository every five minutes and starts a build when it detects changes. Alternatively, configure a GitHub webhook if Jenkins has a publicly reachable URL. Public repository access does not require GitHub credentials; private repositories do.
 
 The Jenkins agent must have Python 3, the Docker CLI, and permission to use a Docker daemon. If Jenkins runs in a container, configure Docker socket access for the Jenkins process; the pipeline cannot grant that host-level permission itself.
 

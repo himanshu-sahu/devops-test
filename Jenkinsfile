@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
     environment {
         PYTHONPATH = "${WORKSPACE}"
     }
@@ -52,6 +56,17 @@ pipeline {
                 sh '''
                     docker --version
                     docker build -t aceest-fitness-gym .
+                '''
+            }
+        }
+
+        stage('Deploy Docker Container') {
+            steps {
+                sh '''
+                    if docker container inspect aceest-fitness-gym >/dev/null 2>&1; then
+                        docker rm -f aceest-fitness-gym
+                    fi
+                    docker run -d --name aceest-fitness-gym --restart unless-stopped -p 5001:5000 aceest-fitness-gym
                 '''
             }
         }
