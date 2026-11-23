@@ -88,10 +88,13 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh '''
-                    ROLLBACK_ON_FAILURE="${ROLLBACK_ON_FAILURE}" \
-                    ./scripts/kubernetes-deploy.sh "${DEPLOYMENT_STRATEGY}"
-                '''
+                withCredentials([file(credentialsId: 'minikube-kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh '''
+                        kubectl cluster-info
+                        ROLLBACK_ON_FAILURE="${ROLLBACK_ON_FAILURE}" \
+                        ./scripts/kubernetes-deploy.sh "${DEPLOYMENT_STRATEGY}"
+                    '''
+                }
             }
         }
     }
