@@ -101,7 +101,7 @@ To run it, create a Jenkins Pipeline job (or Multibranch Pipeline), configure it
 
 For a Pipeline job configured with SCM, the `Jenkinsfile` polls the repository every five minutes and starts a build when it detects changes. Alternatively, configure a GitHub webhook if Jenkins has a publicly reachable URL. Public repository access does not require GitHub credentials; private repositories do.
 
-The Jenkins agent must have Python 3, the Docker CLI, and permission to use a Docker daemon. If Jenkins runs in a container, configure Docker socket access for the Jenkins process; the pipeline cannot grant that host-level permission itself.
+The Jenkins agent must have Python 3, the Docker CLI, `kubectl` (on `PATH`), and permission to use a Docker daemon and Kubernetes cluster. Configure the agent's Kubernetes context or provide a Jenkins kubeconfig Secret file as `KUBECONFIG`. The deployment script checks for both `kubectl` and cluster connectivity before changing resources. If `kubectl` is installed outside `PATH`, set the `KUBECTL` environment variable to its executable path. If Jenkins runs in a container, configure Docker socket access and make the Kubernetes configuration available to the Jenkins process; the pipeline cannot grant those host-level permissions itself.
 
 ## Kubernetes Deployment
 
