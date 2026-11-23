@@ -103,6 +103,34 @@ For a Pipeline job configured with SCM, the `Jenkinsfile` polls the repository e
 
 The Jenkins agent must have Python 3, the Docker CLI, and permission to use a Docker daemon. If Jenkins runs in a container, configure Docker socket access for the Jenkins process; the pipeline cannot grant that host-level permission itself.
 
+## Kubernetes Deployment
+
+The Kubernetes manifests are in `k8s/` and deploy two application replicas in the `aceest` namespace. The service exposes the application on Minikube through NodePort `30001`.
+
+Deploy to Minikube:
+
+```bash
+eval $(minikube docker-env)
+docker build -t aceest-fitness-gym:latest .
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+minikube service aceest-fitness-gym -n aceest
+```
+
+## Deployment Strategies
+
+Use `./scripts/kubernetes-deploy.sh <strategy>`:
+
+- `rolling`: updates the stable deployment with zero unavailable replicas.
+- `blue-green`: starts the candidate deployment, verifies it, and switches the public service selector to candidate.
+- `canary`: installs the NGINX candidate Ingress. Add `X-Canary: always` to route a request to the candidate.
+- `shadow`: mirrors stable traffic to the candidate while returning only stable responses.
+- `a-b`: routes users sending `X-AB-Group: B` to the candidate; others remain on the stable version.
+- `rollback`: restores the last Kubernetes revision and points the public service back to stable.
+
+Set `ROLLBACK_ON_FAILURE=true` to automatically restore the stable deployment if rollout or verification fails. The Jenkins pipeline exposes the strategy and rollback behavior as build parameters.
+
 ## Assignment Reflection
 
 This project follows the DevOps assignment goals by demonstrating:

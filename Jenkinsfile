@@ -1,6 +1,19 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'DEPLOYMENT_STRATEGY',
+            choices: ['rolling', 'blue-green', 'canary', 'shadow', 'a-b', 'rollback'],
+            description: 'Kubernetes deployment strategy'
+        )
+        booleanParam(
+            name: 'ROLLBACK_ON_FAILURE',
+            defaultValue: true,
+            description: 'Automatically return to the last stable deployment if verification fails'
+        )
+    }
+
     triggers {
         pollSCM('H/5 * * * *')
     }
@@ -69,6 +82,15 @@ pipeline {
                         docker rm -f aceest-fitness-gym
                     fi
                     docker run -d --name aceest-fitness-gym --restart unless-stopped -p 5001:5000 aceest-fitness-gym
+                '''
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                    ROLLBACK_ON_FAILURE="${ROLLBACK_ON_FAILURE}" \
+                    ./scripts/kubernetes-deploy.sh "${DEPLOYMENT_STRATEGY}"
                 '''
             }
         }

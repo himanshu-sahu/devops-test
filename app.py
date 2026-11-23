@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+import os
 
 app = Flask(__name__)
 
@@ -18,6 +19,14 @@ PLANS = [
     {"name": "Premium", "fee": 1499, "access": "Gym, group classes & trainer support"},
     {"name": "Elite", "fee": 2499, "access": "All access + nutrition consultations"},
 ]
+
+DEPLOYMENT_VARIANT = os.getenv("DEPLOYMENT_VARIANT", "stable")
+
+
+@app.after_request
+def add_deployment_header(response):
+    response.headers["X-Deployment-Variant"] = DEPLOYMENT_VARIANT
+    return response
 
 
 @app.route('/')
@@ -42,7 +51,11 @@ def home():
 
 @app.route('/health')
 def health():
-    return jsonify({"status": "ok", "service": "aceest-fitness-gym"})
+    return jsonify({
+        "status": "ok",
+        "service": "aceest-fitness-gym",
+        "version": DEPLOYMENT_VARIANT,
+    })
 
 
 @app.route('/members')
